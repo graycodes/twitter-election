@@ -23,7 +23,11 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
     });
 
     stream.on('tweet', function (tweet) {
-        console.log(tweet.text.match(/#\w+\b/g));
+        var tags = _.pluck(tweet.entities.hashtags, 'text');
+        if (!_.isEmpty(tags)) {
+            console.log(tags);
+            console.log('');
+        }
     });
     return undefined;
 });
