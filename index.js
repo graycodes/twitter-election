@@ -9,25 +9,26 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
     var T = new Twit(JSON.parse(data));
 
-//    T.get('search/tweets', { q: '%23labour', count: 100 }, function (err, data, response) {
-//        if (err) {
-//            return console.log(err);
-//        }
-//        return console.log(_.pluck(data.statuses, 'text'));
-//    });
+    var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem', 'greens',
+                   'green party', 'tusc', 'snp', 'plaid', 'ukip'];
 
     var stream = T.stream('statuses/filter', {
-        track: 'election',
+        track: parties.join(','),
         language: 'en'/*,
         locations: ['-13.44', '62.50', '2.10', '50.15']*/
     });
 
     stream.on('tweet', function (tweet) {
         var tags = _.pluck(tweet.entities.hashtags, 'text');
-        if (!_.isEmpty(tags)) {
-            console.log(tags);
-            console.log('');
+        var matcher = new RegExp('(' + parties.join('|') + ')','gi');
+        var party = tweet.text.match(matcher);
+        if (party) {
+            console.log(_.uniq(_.map(party, function (p) {
+                return p.toLowerCase();
+            })));
         }
+        console.log('');
+
     });
     return undefined;
 });
