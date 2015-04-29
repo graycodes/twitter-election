@@ -10,9 +10,9 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
     var T = new Twit(JSON.parse(data));
 
     var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem', 'greens',
-                   'green party', 'tusc', 'snp', 'plaid', 'ukip'];
+                   'green party', 'tusc', 'snp', 'plaid', 'ukip'];// TODO: Add liberal democrats
 
-    var partyNames = [ 'Labour', 'Conservative', 'SNP', 'Lib Dems', 'Green', 'TUSC', 'Plaid', 'UKIP' ];
+    var partyNames = [ 'labour', 'conservative', 'snp', 'lib dem', 'green', 'tusc', 'plaid', 'ukip' ];
 	var fudge = [0,0,0,0,0,0,0,0];
 
     var partyScores = _.zipObject(partyNames, fudge);
@@ -30,11 +30,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
         if (!party) return;
 
-        partiesTweeted = (_.uniq(_.map(party, function (p) {
-            return p.toLowerCase();
-        })));
-
-        console.log(partiesTweeted);
+        partiesTweeted = cleanTweet(party);
 
 	    storeParties(partiesTweeted);
 
@@ -46,41 +42,20 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 		console.log('**************************');
 	}, 5000);
 
-    //TODO finish this.
-    function storeParties(parties) {//todo fix multiple insert to one party via 2 names
+	function cleanTweet(party) {
+		var uniques = _.uniq(_.map(party, function (p) {
+			p = p.replace(/(tory|tories)/i, 'conservative');
+			p = p.replace(/(greens|green party)/i, 'green');
+			return p.toLowerCase();
+		}));
+
+		return uniques;
+	}
+
+    function storeParties(parties) {
         while (parties.length) {
             var p = parties.pop();
-            switch (p) {
-                case 'labour':
-                    partyScores['Labour']++;
-                    break;
-                case 'conservative':
-                case 'tory':
-                case 'tories':
-                    partyScores['Conservative']++;
-                    break;
-                case 'lib dem':
-                    partyScores['Lib Dems']++;//?
-                    break;
-                case 'greens':
-                case 'green':
-                    partyScores['Green']++;
-			     break;
-			 case 'snp':
-			     partyScores['SNP']++;
-			     break;
-			 case 'tusc':
-			     partyScores['TUSC']++;
-			     break;
-			 case 'plaid':
-			     partyScores['Plaid']++;
-			     break;
-			 case 'ukip':
-			     partyScores['UKIP']++;
-			     break;
-			 default:
-   			     break;
-            }
+            partyScores[p]++;
         }
     }
 
