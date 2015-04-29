@@ -13,12 +13,9 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
                    'green party', 'tusc', 'snp', 'plaid', 'ukip'];
 
     var partyNames = [ 'Labour', 'Conservative', 'SNP', 'Lib Dems', 'Green', 'TUSC', 'Plaid', 'UKIP' ];
+	var fudge = [0,0,0,0,0,0,0,0];
 
-    var partyScores = _.map(partyNames, function (p) {
-        var o = {};
-        return o[p] = 0;
-    });
-    console.log(partyScores);
+    var partyScores = _.zipObject(partyNames, fudge);
 
     var stream = T.stream('statuses/filter', {
         track: parties.join(','),
@@ -39,7 +36,15 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
         console.log(partiesTweeted);
 
+	    storeParties(partiesTweeted);
+
     });
+
+	setInterval(function() {
+		console.log('**************************');
+		console.log(partyScores)
+		console.log('**************************');
+	}, 5000);
 
     //TODO finish this.
     function storeParties(parties) {//todo fix multiple insert to one party via 2 names
@@ -60,7 +65,21 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
                 case 'greens':
                 case 'green':
                     partyScores['Green']++;
-                
+			     break;
+			 case 'snp':
+			     partyScores['SNP']++;
+			     break;
+			 case 'tusc':
+			     partyScores['TUSC']++;
+			     break;
+			 case 'plaid':
+			     partyScores['Plaid']++;
+			     break;
+			 case 'ukip':
+			     partyScores['UKIP']++;
+			     break;
+			 default:
+   			     break;
             }
         }
     }
