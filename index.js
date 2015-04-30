@@ -9,13 +9,12 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
     var T = new Twit(JSON.parse(data));
 
-    var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem', 'greens',
-                   'green party', 'tusc', 'snp', 'plaid', 'ukip'];// TODO: Add liberal democrats
+    var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem', 'liberal democrat', 'greens',
+                   'green party', 'tusc', 'snp', 'plaid', 'ukip'];
 
     var partyNames = [ 'labour', 'conservative', 'snp', 'lib dem', 'green', 'tusc', 'plaid', 'ukip' ];
-	var fudge = [0,0,0,0,0,0,0,0];
 
-    var partyScores = _.zipObject(partyNames, fudge);
+    var partyScores = _.zipObject(partyNames, _.map(partyNames, _.constant(0)));
 
     var stream = T.stream('statuses/filter', {
         track: parties.join(','),
@@ -30,27 +29,29 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
         if (!party) return;
 
-        partiesTweeted = cleanTweet(party);
 
-	    storeParties(partiesTweeted);
+        partiesTweeted = cleanTweet(party);
+        console.log(partiesTweeted);
+	storeParties(partiesTweeted);
 
     });
 
-	setInterval(function() {
-		console.log('**************************');
-		console.log(partyScores)
-		console.log('**************************');
-	}, 5000);
+    setInterval(function() {
+	console.log('**************************');
+	console.log(partyScores)
+	console.log('**************************');
+    }, 5000);
 
-	function cleanTweet(party) {
-		var uniques = _.uniq(_.map(party, function (p) {
-			p = p.replace(/(tory|tories)/i, 'conservative');
-			p = p.replace(/(greens|green party)/i, 'green');
-			return p.toLowerCase();
-		}));
+    function cleanTweet(party) {
+	var uniques = _.uniq(_.map(party, function (p) {
+	    p = p.replace(/(tory|tories)/i, 'conservative');
+	    p = p.replace(/(greens|green party)/i, 'green');
+	    p = p.replace('liberal democrat', 'lib dem');
+	    return p.toLowerCase();
+	}));
 
-		return uniques;
-	}
+	return uniques;
+    }
 
     function storeParties(parties) {
         while (parties.length) {
