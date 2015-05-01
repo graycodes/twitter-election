@@ -9,10 +9,12 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
     var T = new Twit(JSON.parse(data));
 
-    var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem', 'liberal democrat', 'greens',
-                   'green party', 'tusc', 'snp', 'plaid', 'ukip'];
+    var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem',
+                   'liberal democrat', 'greens','green party', 'tusc', 'snp', 'plaid',
+                   'ukip'];
 
-    var partyNames = [ 'labour', 'conservative', 'snp', 'lib dem', 'green', 'tusc', 'plaid', 'ukip' ];
+    var partyNames = [ 'labour', 'conservative', 'snp', 'lib dem', 'green', 'tusc',
+                       'plaid', 'ukip' ];
 
     var partyScores = _.zipObject(partyNames, _.map(partyNames, _.constant(0)));
 
@@ -29,9 +31,8 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
         if (!party) return;
 
-
         partiesTweeted = cleanTweet(party);
-        console.log(partiesTweeted);
+
 	storeParties(partiesTweeted);
 
     });
