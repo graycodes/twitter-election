@@ -1,11 +1,15 @@
 var fs = require('fs');
 var _ = require('lodash');
 var Twit = require('twit');
+var mongoose = require('mongoose');
 
 fs.readFile('./secret.json', 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }
+
+    mongoose.connect('mongodb://localhost/election');
+    var Mention = mongoose.model('Mention', { timestamp: { type: Date, default: Date.now } , party: String });
 
     var T = new Twit(JSON.parse(data));
 
@@ -58,7 +62,18 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
         while (parties.length) {
             var p = parties.pop();
             partyScores[p]++;
+            saveToDb(p);
         }
+    }
+
+    function saveToDb(party) {
+        var mention = new Mention({ party: party });
+        mention.save(function (err) {
+            if (err) {
+                console.log('db save fail');
+            }
+            console.log('+');
+        });
     }
 
     return undefined;
