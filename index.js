@@ -70,7 +70,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 	var uniques = _.uniq(_.map(party, function (p) {
 	    p = p.replace(/(tory|tories)/i, 'conservative');
 	    p = p.replace(/(greens|green party)/i, 'green');
-	    p = p.replace('liberal democrat', 'lib dem');
+	    p = p.replace(/liberal democrat/i, 'lib dem');
 	    return p.toLowerCase();
 	}));
 
