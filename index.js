@@ -69,7 +69,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
 	bar.setData({ titles: titles, data: data});
 
-	screen.render()
+	screen.render();
 
     }, 1000);
 
