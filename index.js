@@ -91,7 +91,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
             if (err) {
                 console.log('db save fail');
             }
-            console.log('+');
+            // console.log('+');
         });
     }
 
