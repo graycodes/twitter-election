@@ -7,7 +7,6 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }
-
     mongoose.connect('mongodb://localhost/election');
     var Mention = mongoose.model('Mention', { timestamp: { type: Date, default: Date.now } , party: String });
 
@@ -21,6 +20,14 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
                        'plaid', 'ukip' ];
 
     var partyScores = _.zipObject(partyNames, _.map(partyNames, _.constant(0)));
+
+    var argv = process.argv.slice(2);
+    switch (argv[0]) {
+        case '-d':
+          getData();
+          return;
+          break;
+    }
 
     var stream = T.stream('statuses/filter', {
         track: parties.join(','),
@@ -48,7 +55,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 	var bar = contrib.bar({ label: 'Tweets', barWidth: 4, barSpacing: 6, xOffset: 0, maxHeight: 9});
 
 	screen.append(bar);
-	screen.render()
+	screen.render();
 
     setInterval(function() {
 
@@ -93,6 +100,31 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
             }
             // console.log('+');
         });
+    }
+
+    function getData() {
+        var query = [
+            {
+                '$group': {
+                    '_id': {
+                        hour: { '$hour': "$timestamp" },
+                        party: "$party"
+                    },
+                    count: { '$sum': 1 }
+                }
+            },{
+                '$sort': {
+                    '_id.hour': 1,
+                    'count': -1
+                }
+            }];
+
+        Mention.aggregate(query, function (err, mentions) {
+            if (err) console.log('e', err);
+            console.log('m', mentions);
+            process.exit();
+        });
+
     }
 
     return undefined;
