@@ -37,15 +37,34 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
         partiesTweeted = cleanTweet(party);
 
-	storeParties(partiesTweeted);
+		storeParties(partiesTweeted);
 
-    });
+	});
+
+	var blessed = require('blessed');
+	var contrib = require('blessed-contrib');
+	var screen = blessed.screen();
+
+	var bar = contrib.bar({ label: 'Tweets', barWidth: 4, barSpacing: 6, xOffset: 0, maxHeight: 9});
+
+	screen.append(bar);
+	screen.render()
 
     setInterval(function() {
-	console.log('**************************');
-	console.log(partyScores)
-	console.log('**************************');
-    }, 5000);
+
+		var titles = [];
+		var data = [];
+		// console.log(partyScores);
+		_.forEach(partyScores, function(count, title) {
+			titles.push(title);
+			data.push(count);
+		});
+
+		bar.setData({ titles: titles, data: data});
+
+		screen.render()
+
+	}, 1000);
 
     function cleanTweet(party) {
 	var uniques = _.uniq(_.map(party, function (p) {
@@ -72,7 +91,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
             if (err) {
                 console.log('db save fail');
             }
-            console.log('+');
+            // console.log('+');
         });
     }
 

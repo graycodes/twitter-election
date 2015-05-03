@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "blessed": "^0.1.56",
+    "blessed-contrib": "^2.0.5",
     "lodash": "^3.7.0",
     "mongoose": "^4.0.2",
     "twit": "^1.1.20"
