@@ -22,11 +22,13 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
     var partyScores = _.zipObject(partyNames, _.map(partyNames, _.constant(0)));
 
     var argv = process.argv.slice(2);
+    var graph = false;
+
     switch (argv[0]) {
-        case '-d':
-          getData();
-          return;
-          break;
+    case '-d':
+        getData();
+        return;
+        break;
     }
 
     var stream = T.stream('statuses/filter', {
@@ -43,35 +45,33 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
         if (!party) return;
 
         partiesTweeted = cleanTweet(party);
+	storeParties(partiesTweeted);
+    });
 
-		storeParties(partiesTweeted);
+    var blessed = require('blessed');
+    var contrib = require('blessed-contrib');
+    var screen = blessed.screen();
 
-	});
+    var bar = contrib.bar({ label: 'Tweets', barWidth: 4, barSpacing: 6, xOffset: 0, maxHeight: 9});
 
-	var blessed = require('blessed');
-	var contrib = require('blessed-contrib');
-	var screen = blessed.screen();
-
-	var bar = contrib.bar({ label: 'Tweets', barWidth: 4, barSpacing: 6, xOffset: 0, maxHeight: 9});
-
-	screen.append(bar);
-	screen.render();
-
+    screen.append(bar);
+    screen.render();
+    
     setInterval(function() {
 
-		var titles = [];
-		var data = [];
-		// console.log(partyScores);
-		_.forEach(partyScores, function(count, title) {
-			titles.push(title);
-			data.push(count);
-		});
+	var titles = [];
+	var data = [];
+	// console.log(partyScores);
+	_.forEach(partyScores, function(count, title) {
+	    titles.push(title);
+	    data.push(count);
+	});
 
-		bar.setData({ titles: titles, data: data});
+	bar.setData({ titles: titles, data: data});
 
-		screen.render()
+	screen.render()
 
-	}, 1000);
+    }, 1000);
 
     function cleanTweet(party) {
 	var uniques = _.uniq(_.map(party, function (p) {
