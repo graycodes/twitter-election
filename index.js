@@ -12,7 +12,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
     var T = new Twit(JSON.parse(data));
 
-    var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem',
+    var parties = ['labour', 'conservative', 'tory', 'tories', 'lib dem', 'libdem',
                    'liberal democrat', 'greens','green party', 'tusc', 'snp', 'plaid',
                    'ukip'];
 
