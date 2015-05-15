@@ -3,7 +3,9 @@ var _ = require('lodash');
 var Twit = require('twit');
 var mongoose = require('mongoose');
 
-fs.readFile('./secret.json', 'utf8', function (err,data) {
+fs.readFile('./secret.json', 'utf8', getTweets);
+
+function getTweets(err,data) {console.log('aaaa');
     if (err) {
         return console.log(err);
     }
@@ -53,7 +55,7 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
 
     if (!graph) {
         console.log('Storing to DB');
-    } else {
+    } else {console.log('gr');
         var blessed = require('blessed');
         var contrib = require('blessed-contrib');
         var screen = blessed.screen();
@@ -135,4 +137,4 @@ fs.readFile('./secret.json', 'utf8', function (err,data) {
     }
 
     return undefined;
-});
+};
